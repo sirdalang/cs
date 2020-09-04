@@ -44,7 +44,7 @@ public:
     void Reverse();
 
     /**
-     * @brief 删除所有制定元素
+     * @brief 删除所有指定元素
      * @note 
      * 空间复杂度为 O(1)
      * 时间复杂度为 O(n)

@@ -1,17 +1,21 @@
 
 CPP=g++
 CFLAGS=-std=c++11
-CFLAGS+=-g 
-
-SRC_SQLIST=sqlist.cpp sqlist_test.cpp
+CFLAGS+=-g -Wall
 
 SRC_QUICKSORT=quicksort.cpp
+SRC_SQLIST=sqlist.cpp sqlist_test.cpp
+SRC_LINKEDLIST=linkedlist.cpp linkedlist_test.cpp
 
 sqlist.out:$(SRC_SQLIST)
 	$(CPP) $(SRC_SQLIST) $(CFLAGS)  -o $@
 
 quicksort.out:$(SRC_QUICKSORT)
 	$(CPP) $(SRC_QUICKSORT) $(CFLAGS) -o $@
+
+linkedlist.out:$(SRC_LINKEDLIST)
+	$(CPP) $(SRC_LINKEDLIST) $(CFLAGS) -o $@
+
 
 .PHONY: 
 	clean
