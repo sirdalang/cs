@@ -22,19 +22,27 @@ private:
 
     Node *head__;
 private:
-    Node *GetPreNode__(int i);
+    Node *GetPreNode__(int i) const;
     
 public:
     /* base interface */
     LinkedList();
     ~LinkedList();
-    void PrintList();
+    void PrintList() const;
 
-    int Length();
-    int LocateElem(ElemTypeCR e);
-    ElemType *GetElem(int i);
+    int Length() const;
+    int LocateElem(ElemTypeCR e) const;
+    ElemType *GetElem(int i) const;
     int ListInsert(int i, ElemTypeCR e);
     int ListDelete(int i, ElemTypeP pDel);
+    ElemType MidEle() const;
+    void Reverse();
+    void ReverseV2();
+
+    /* alg eg */
+    ElemType LocateLast(int k) const;
+    static ElemType FindSameTail(const LinkedList &l1, const LinkedList &l2);
+    void mixele();
 };
 
 #endif // LINKEDLIST_H__

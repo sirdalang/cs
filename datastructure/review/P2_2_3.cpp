@@ -127,6 +127,12 @@ void move_left_v2(std::vector<int> &v, int step) {
  * 11.
  * 找出两个升序数组合并成一个升序数组后的中位数，对于
  * n个元素的数组，其中位数是指第n/2（向上取整）个数。
+ * 
+ * 时间复杂度：每个元素需要处理一次，故为O(n)
+ * 空间复杂度：不需要动态空间，因此为O(1)
+ * 
+ * 更优的算法：每次找中位数，并去掉较短的数组的一半，可
+ * 以将时间复杂度降为log(n)
  */
 int find_mid(const std::vector<int> &v1, const std::vector<int> &v2) {
     int ret = 0;
@@ -189,6 +195,66 @@ int find_mid(const std::vector<int> &v1, const std::vector<int> &v2) {
     return ret;
 }
 
+/**
+ * 12.
+ * 寻找数组的主元素。
+ * 若一个数在n个元素的数组中出现的次数
+ * 超过n/2次，则称其为主元素。否则没有
+ * 主元素。
+ * 性能分析：
+ * 时间复杂度：O(n^2)
+ * 空间复杂度：O(1)
+ * 
+ * 更优的算法：
+ */
+int find_main(const std::vector<int> &v) {
+    /* 算法思路：逐项依次统计，若某项达到条件，则为主元素 */
+    int ret = -1;
+    for (int i = 0; i < v.size() && i <= v.size() / 2; ++i) { /* 只需要检查一半 */
+        int count = 0;
+        for (int k = 0; k < v.size(); ++k) {
+            if (v[k] == v[i]) {
+                ++count;
+            }
+        }
+        if (count > v.size() / 2) {
+            ret = v[i];
+        }
+    }
+    return ret;
+}
+
+/**
+ * 13.
+ * 找未出现的最小正整数
+ * 如 [-1,2,3,4] : 1
+ *    [1,2,3,4] : 5
+ * 要求时间上尽可能高效（空间不作要求）
+ * 
+ * 算法思路：从最小正数开始找，第一个没有找到的正数即为答案
+ * 时间复杂度：O(n^2)
+ * 空间复杂度：O(1)
+ * 
+ * 算法2:用槽来标记。但是需要数组中的最大值是有限值的前提
+ */
+int find_min_positive(const std::vector<int> &v) {
+    int ret = -1;
+    for (int i = 1; ; ++i) {
+        bool found = false;
+        for (int k = 0; k < v.size(); ++k) {
+            if (v[k] == i) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            ret = i;
+            break;
+        }
+    }
+    return ret;
+}
+
 int f1(int c) {
     switch (c) {
         case 1: {
@@ -226,10 +292,29 @@ int f1(int c) {
             std::vector<int> v2 = {4,5,6};
             int ret = find_mid (v1, v2);
             std::cout << "ret=" << ret << std::endl;
+            break;
+        }
+        case 7: {
+            std::vector<int> v1 = {0,5,5,3,5,7,5,5};
+            std::vector<int> v2 = {0,5,5,3,5,1,5,7};
+            int ret = find_main(v1);
+            std::cout << "ret=" << ret << std::endl;
+            ret = find_main(v2);
+            std::cout << "ret=" << ret << std::endl;
+            break;
+        }
+        case 8: {
+            std::vector<int> v1 = {-5,3,2,3};
+            std::vector<int> v2 = {1,2,3};
+            int ret = find_min_positive(v1);
+            std::cout << "ret=" << ret << std::endl;
+            ret = find_min_positive(v2);
+            std::cout << "ret=" << ret << std::endl;
+            break;
         }
     }
 }
 
 int main() {
-    f1(6);
+    f1(8);
 }
