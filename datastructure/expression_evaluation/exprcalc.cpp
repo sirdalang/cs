@@ -18,7 +18,17 @@ ELETYPE ExprCalc::calc(const std::list<ExprItem> &items) {
     return calcsufix(listSufixItems);
 }
 
-/* 中缀表达式转换为后缀表达式 */
+/**
+ * @brief 中缀表达式转换为后缀表达式 
+ * 算法描述：
+ * 依次扫描中缀表达式，对于遇到的每个元素：
+ * 1.如果是操作数，直接输出。
+ * 2.如果是左括号，直接压栈；如果是右括号，则出栈并输出，直到遇到左括号，左括号不输出。
+ * 3.如果是操作符，如果栈空，则压栈，否则和栈顶元素比较优先级：
+ * 3.1 如果优先级高，则压栈。
+ * 3.2 如果优先级相等或低，则弹出并输出，直到优先级高或者栈空，最后压栈。
+ * 4.如果元素扫描结束，则出栈并输出至栈空。
+ */
 int ExprCalc::infix2sufix(
 const std::list<ExprItem> &infixitems, std::list<ExprItem> &sufixitems) {
     std::stack<ExprItem> stackOp;
@@ -65,8 +75,13 @@ const std::list<ExprItem> &infixitems, std::list<ExprItem> &sufixitems) {
                 else {
                     while (! stackOp.empty()) {
                         crefTop = stackOp.top();
-                        listSufix.push_back(crefTop);
-                        stackOp.pop();
+                        if (priority(*it, crefTop) <= 0) {
+                            listSufix.push_back(crefTop);
+                            stackOp.pop();
+                        }
+                        else {
+                            break;
+                        }
                     }
                     stackOp.push(*it);
                 }
