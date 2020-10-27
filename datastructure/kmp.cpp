@@ -157,13 +157,127 @@ const char *strstr_kmp(const char *szSrc, const char *szToken) {
         }
     }
 
+    std::cout << "pm:" << std::endl;
+    for (auto i : pm) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
     /* PM表转next表 */
     std::vector<int> next(nLenToken); /* next表 */
 
     next[0] = -1;
-    for (int k = 1; k < next.size(); ++k) {
+    for (std::size_t k = 1; k < next.size(); ++k) {
         next[k] = pm[k-1];
     }
+
+    std::cout << "next:" << std::endl;
+    for (auto i : next) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    /* 利用next表进行模式匹配 */
+    i = 0; /* i表示szSrc指针 */
+    j = 0; /* j表示szToken指针 */
+    while (szSrc[i] != '\0' && szToken[j] != '\0') {
+        if (szSrc[i] == szToken[j]) {
+            ++i;
+            ++j;
+        }
+        else {
+            j = next[j];
+            if (j < 0) {
+                ++i;
+                j = 0; /* ++j */
+            }
+        }
+    }
+
+    if (j == nLenToken) {
+        return szSrc + i - j;
+    }
+    else {
+        return nullptr;
+    }
+}
+
+/**
+ * 在v1基础上，避免了p[j]=p[next[j]]引起重复比较的情况
+ * 也即 p[j+1]=p[pm[j]] 的情况
+ * 
+对于模式串 1 1 1 1 2
+PM        0 0 0 0 0
+流程：
+PM[0]=0
+i = 1
+j = 0
+p[j]==p[i],尝试取pm[i]=j+1,此时p[i+1]==p[pm[i]]==p[j+1],
+故尝试取pm[i]=pm[j-1],而j==0,故取pm[i]=j,即pm[i]=0
+i = i+1 = 2
+j = 0
+p[j]==p[i],尝试取pm[i]=j+1,此时p[i+1]==p[pm[i]]==p[j+1],
+故尝试取pm[i]=pm[j-1],而j==0,故取pm[i]=j,即pm[i]=0
+
+...
+
+ */
+const char *strstr_kmp_v2(const char *szSrc, const char *szToken) {
+    int nLenToken = strlen (szToken);
+
+    std::vector<int> pm(nLenToken); /* pm表 */
+
+    /* 求模式串的部分匹配（PM）表 */
+    pm[0] = 0;
+    int i = 1; /* [0,i]表示当前计算pm值的头部子串 */ 
+    int j = 0; /* j为上一个已处理字符串的PM值 */
+    while (i < nLenToken) {
+        if (szToken[j] != szToken[i]) {
+            if (j == 0) {
+                pm[i]=j;
+                ++i;
+            }
+            else {
+                j = pm[j-1];
+            }
+        }
+        else {
+            if (szToken[i+1] == szToken[j+1]) {
+                if (j == 0) {
+                    pm[i] = 0;
+                }
+                else {
+                    pm[i] = pm[j-1];
+                }
+            }
+            else {
+                pm[i] = j+1;
+            }
+            
+            ++i;
+            ++j; /* j=pm[i] */
+        }
+    }
+
+    std::cout << "pm:" << std::endl;
+    for (auto i : pm) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
+
+    /* PM表转next表 */
+    std::vector<int> next(nLenToken); /* next表 */
+
+    next[0] = -1;
+    for (std::size_t k = 1; k < next.size(); ++k) {
+        next[k] = pm[k-1];
+    }
+
+    std::cout << "next:" << std::endl;
+    for (auto i : next) {
+        std::cout << i << " ";
+    }
+    std::cout << std::endl;
 
     /* 利用next表进行模式匹配 */
     i = 0; /* i表示szSrc指针 */
@@ -191,14 +305,7 @@ const char *strstr_kmp(const char *szSrc, const char *szToken) {
 }
 
 int main() {
-
-    std::string strSrc = "111121123121222";
-    std::string strToken = "121123121";
-    const char *szResult = strstr_kmp(strSrc.c_str(), strToken.c_str());
-    std::cout << "i=" << szResult-strSrc.c_str() << std::endl;
-    return 0;
-
-    while (false) {
+    while (true) {
         std::cout << "************" << std::endl;
         std::string strSrc, strToken;
         std::cout << "src: " << std::endl;
@@ -211,8 +318,9 @@ int main() {
 
         const char *szResult = nullptr;
         // szResult = strstr_normal_v1(strSrc.c_str(), strToken.c_str());
-        szResult = strstr_normal_v2(strSrc.c_str(), strToken.c_str());
-        // szResult = strstr_normal_v1(strSrc.c_str(), strToken.c_str());
+        // szResult = strstr_normal_v2(strSrc.c_str(), strToken.c_str());
+        // szResult = strstr_kmp(strSrc.c_str(), strToken.c_str());
+        szResult = strstr_kmp_v2(strSrc.c_str(), strToken.c_str());
         if (szResult != nullptr) {
             std::cout << "i=" << szResult - strSrc.c_str() << std::endl;
         }
