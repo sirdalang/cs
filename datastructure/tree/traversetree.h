@@ -18,3 +18,7 @@ void nonrecur_traverse_preorder(Node *tree);
 void nonrecur_traverse_inorder(Node *tree);
 
 void nonrecur_traverse_postorder(Node *tree);
+
+/* 层次遍历 */
+
+void level_traverse(Node *tree);

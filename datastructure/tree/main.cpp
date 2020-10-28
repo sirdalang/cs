@@ -31,5 +31,9 @@ int main() {
     nonrecur_traverse_postorder (tree);
     std::cout << std::endl;
 
+    std::cout << "level_traverse:" << std::endl;
+    level_traverse (tree);
+    std::cout << std::endl;
+
     return 0;
 }

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stack>
+#include <queue>
 
 void visit(const Node *node) {
     std::cout << node->data << " ";
@@ -153,6 +154,37 @@ void nonrecur_traverse_postorder(Node *tree) {
                     it = it->left();
                 }
             }
+        }
+    }
+}
+
+/** 
+ * 层次遍历 
+ * 按树的水平层次依次遍历。
+ * 
+ * 辅助数据结构：队列
+ * 
+ * 算法逻辑：
+ * 将根节点入队。
+ * 每次从队列取出一个节点，并将节点的左右子树入队。
+ */
+
+void level_traverse(Node *tree) {
+    std::queue<Node*> queue;
+
+    if (tree != nullptr) {
+        queue.push(tree);
+    }
+
+    while (! queue.empty()) {
+        Node *p = queue.front();
+        queue.pop();
+        visit(p);
+        if (p->left()) {
+            queue.push(p->left());
+        }
+        if (p->right()) {
+            queue.push(p->right());
         }
     }
 }
