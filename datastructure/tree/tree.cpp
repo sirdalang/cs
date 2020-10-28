@@ -1,11 +1,12 @@
 #include "tree.h"
 
-Node::Node(const ELETYPE &e) {
+Node::Node(const ELETYPE &e, int iw) {
     data = e;
     l = nullptr;
     r = nullptr;
-    lTag = false;
-    rTag = false;
+    ltag = false;
+    rtag = false;
+    w = iw;
 }
 
 void Node::leftjoin(Node *node) {
@@ -22,4 +23,8 @@ Node *Node::left() {
 
 Node *Node::right() {
     return r;
+}
+
+int Node::weight() const {
+    return w;
 }

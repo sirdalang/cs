@@ -3,8 +3,9 @@
 
 #include "gentree.h"
 #include "traversetree.h"
+#include "wpl.h"
 
-int main() {
+void traverse() {
     Node *tree = gentree();
 
     std::cout << "recursive_traverse_preorder:" << std::endl;
@@ -34,6 +35,18 @@ int main() {
     std::cout << "level_traverse:" << std::endl;
     level_traverse (tree);
     std::cout << std::endl;
+}
+
+void wpl_eg() {
+    Node *tree = gentree();
+    int nWPL = calc_wpl(tree);
+    std::cout << "WPL=" << nWPL << std::endl;
+}
+
+int main() {
+
+    // traverse();
+    wpl_eg();
 
     return 0;
 }
