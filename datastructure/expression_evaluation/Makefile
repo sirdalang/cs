@@ -5,8 +5,8 @@ CFLAGS+=-g -Wall
 
 TARGET=expeva.out
 
-SRC=exprcalc.cpp expritem.cpp main.cpp
-HEAD=exprcalc.h expritem.h public.h
+SRC=$(wildcard *.cpp)
+HEAD=$(wildcard *.h)
 
 $(TARGET):$(SRC) $(HEAD)
 	$(CPP) $(SRC) $(CFLAGS) -o $@

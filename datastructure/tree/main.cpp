@@ -4,6 +4,7 @@
 #include "gentree.h"
 #include "traversetree.h"
 #include "wpl.h"
+#include "bst.h"
 
 void traverse() {
     Node *tree = gentree();
@@ -43,10 +44,27 @@ void wpl_eg() {
     std::cout << "WPL=" << nWPL << std::endl;
 }
 
+void bst_test() {
+    BST bst;
+    bst.insert(5);
+    bst.insert(3);
+    bst.insert(2);
+    bst.insert(4);
+    bst.insert(7);
+    bst.print();
+
+    std::cout << "bst.find(3)=" << bst.find(3) << std::endl;
+    std::cout << "bst.find(6)=" << bst.find(6) << std::endl;
+
+    bst.remove(3);
+    bst.print();
+}
+
 int main() {
 
     // traverse();
-    wpl_eg();
+    // wpl_eg();
+    bst_test();
 
     return 0;
 }
