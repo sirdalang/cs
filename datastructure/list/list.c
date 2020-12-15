@@ -24,7 +24,7 @@ NODE *list_gen(int arr[], int size) {
 void list_print(const NODE *list) {
     printf ("list: %p\n", list);
 
-    NODE *it = list->next;
+    const NODE *it = list;
     while (it != NULL) {
         printf ("%d ", it->data);
         it = it->next;
@@ -33,6 +33,155 @@ void list_print(const NODE *list) {
     return ;
 }
 
-NODE *list_eg1(NODE *list) {
+/**
+ * 单链表的原地逆置必须用到三个指针指向连续的三个元素，前两个
+ * 指针用于将待逆置的两个节点的指针反转，后一个指针用于进行遍
+ * 历（因为前两个节点的指针已经被逆转了）。
+ * 特点：不需要头节点辅助。中间节点为 NULL 时结束。
+ */
+NODE *list_reverse_bare(NODE *list) {
+    /* 少于两个元素，不操作 */
+    if (list == NULL || list->next == NULL) {
+        return list;
+    }
     
+    NODE *r1 = list;
+    NODE *r2 = list->next;
+    NODE *r3 = list->next->next;
+    r1->next = NULL; // 逆置后的尾节点
+    while (r2) {
+        r2->next = r1;
+        r1 = r2;
+        r2 = r3;
+        if (r3) {
+            r3 = r3->next;
+        }
+    }
+    list = r1;
+    return list;
+}
+
+NODE *list_reverse(NODE *list) {
+    /* 少于两个元素，不操作 */
+    if (list == NULL || list->next == NULL || list->next->next == NULL) {
+        return list;
+    }
+    NODE *r = list_reverse_bare(list->next);
+    list->next = r;
+    return list;
+}
+
+
+
+/**
+ * 创建一个头节点（而不是头指针），用于指向
+ * 合并后的链表。合并的过程是一个尾插的过程，
+ * 要注意节点移动到尾部后指针清零。
+ * 特点：头节点是临时节点。只改变原有链表的
+ * 指针。
+ */
+NODE *list_merge_bare(NODE *lista, NODE *listb) {
+    NODE head = {};
+    NODE *tail = &head;
+    while (1) {
+        if (lista != NULL && listb != NULL) {
+            if (lista->data <= listb->data) {
+                tail->next = lista;
+                tail = tail->next;
+                lista = lista->next;
+                tail->next = NULL;
+            } else {
+                tail->next = listb;
+                tail = tail->next;
+                listb = listb->next;
+                tail->next = NULL;
+            }
+        }
+        else if (lista != NULL) {
+            tail->next = lista;
+            tail = tail->next;
+            lista = lista->next;
+            tail->next = NULL;
+        }
+        else if (listb != NULL) {
+            tail->next = listb;
+            tail = tail->next;
+            listb = listb->next;
+            tail->next = NULL;
+        }
+        else {
+            break;
+        }
+    }
+    return head.next;
+}
+
+NODE *list_merge(NODE *lista, NODE *listb) {
+    NODE *list = list_merge_bare(lista->next, listb->next);
+    lista->next = list;
+    free (listb);
+    return lista;
+}
+
+NODE *list_eg1(NODE *list) {
+    /* 排除空链表、一个元素、两个元素的情况 */
+    if (list->next == NULL || list->next->next == NULL || 
+        list->next->next->next == NULL) {
+        return list;
+    }
+    /* 找中间靠左节点 */
+    NODE *l=list->next, *r=list->next;
+    while (r != NULL) {
+        r = r->next;
+        if (r != NULL) {
+            r = r->next;
+            if (r != NULL) {
+                l = l->next;
+            }
+        }
+    }
+    /* 切分为两个链表，后一个链表没有头节点 */
+    r=l->next;
+    l->next = NULL;
+    /* 逆置后一个链表，使用原地反向法 */
+    l = r;
+    NODE *r1=NULL,*r2=NULL,*r3=NULL; // 链表上连续的三个节点
+    r1 = r;
+    r2 = r->next;
+    if (r2 != NULL) 
+        r3 = r2->next;
+    while (r2 != NULL) {
+        r2->next = r1;
+        r1 = r2;
+        r2 = r3;
+        if (r3) {
+            r3 = r3->next;
+        }
+    }
+    l->next = NULL;
+    /* 合并两个链表 */
+    l = list->next; // 第一个链表的头节点
+    r = r1; // 第二个链表的头节点
+    NODE *last = list; // 合并后链表的尾节点
+    while (1) {
+        NODE *ll = NULL,*rr = NULL;
+        if (l) {
+            ll = l->next;
+            last->next = l;
+            last = last->next;
+            last->next = NULL;
+            l = ll;
+        }
+        if (r) {
+            rr = r->next;
+            last->next = r;
+            last = last->next;
+            last->next = NULL;
+            r = rr;
+        }
+        if (l == NULL && r == NULL) {
+            break;
+        }
+    }
+    return list;
 }
