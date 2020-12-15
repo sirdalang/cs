@@ -37,12 +37,27 @@ void test3() {
     return ;
 }
 
+void test4() {
+    int arra[] = {1,2,3};
+    NODE *lista = list_gen(arra, sizeof(arra)/sizeof(arra[0]));
+    list_print (lista);
+
+    int arrb[] = {4,5};
+    NODE *listb = list_gen(arrb, sizeof(arrb)/sizeof(arrb[0]));
+    list_print (listb);
+
+    NODE *list = list_append(lista, listb);
+    list_print(list);
+    return ;
+}
+
 int main() {
     printf ("this is amazing!\n");
 
     // test();
     // test2();
-    test3();
+    // test3();
+    test4();
 
     return 0;
 }

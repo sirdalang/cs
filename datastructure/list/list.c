@@ -71,7 +71,20 @@ NODE *list_reverse(NODE *list) {
     return list;
 }
 
+NODE *list_append_bare(NODE *lista, NODE *listb) {
+    NODE *it = lista;
+    while (it->next) {
+        it = it->next;
+    }
+    it->next = listb;
+    return lista;
+}
 
+NODE *list_append(NODE *lista, NODE *listb) {
+    list_append_bare (lista->next, listb->next);
+    free (listb);
+    return lista;
+}
 
 /**
  * 创建一个头节点（而不是头指针），用于指向
@@ -79,6 +92,17 @@ NODE *list_reverse(NODE *list) {
  * 要注意节点移动到尾部后指针清零。
  * 特点：头节点是临时节点。只改变原有链表的
  * 指针。
+ * 
+ * 扩展：
+ * 头节点的作用：
+ * 头节点在于让算法对空对象和非空对象具有处理的一致性。
+ * 
+ * 思考：这里为什么要用指向头节点的指针？
+ * 建立一个空链表，并从尾部增加节点需要一个
+ * 头节点，并需要一个游标。初始情况下游标指向
+ * 头节点。
+ * 这里的头节点不能用指针代替，是因为游标指针
+ * 必须指向头节点。
  */
 NODE *list_merge_bare(NODE *lista, NODE *listb) {
     NODE head = {};
