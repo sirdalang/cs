@@ -60,6 +60,7 @@ ExprItem::ExprItem(const std::string &strItem) {
 }
 
 std::ostream &operator<<(std::ostream &os, const ExprItem &item) {
+    os << "[";
     switch (item.eType) {
     case ExprItem::ItemType::BR: {
         switch (item.data.eBrType) {
@@ -100,6 +101,7 @@ std::ostream &operator<<(std::ostream &os, const ExprItem &item) {
         break;
     }
     }
+    os << "]";
     return os;
 }
 
@@ -151,7 +153,6 @@ std::list<ExprItem> ExprItem::parse(const std::string &expr) {
             while (itSeeker != expr.cend() &&
                     std::isdigit(*itSeeker)) {
                 ++itSeeker;
-                break;
             }
 
             std::string str(itPos, itSeeker);
