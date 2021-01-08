@@ -1,11 +1,19 @@
 
 #include "sort.h"
 
+#include <assert.h>
+
 namespace {
 
-/* 折半查找，返回应插入的位置 */
+/** 
+ * 折半查找，返回应插入的位置 
+ * 2 3 5 7 1
+ * begin = 0
+ * end = 4
+ * ele = 1
+ **/
 int half_locate(const std::vector<int> &ref, int begin, int end, int ele) {
-    if (begin <= end) {
+    if (begin >= end) {
         return -1;
     }
 
@@ -16,6 +24,9 @@ int half_locate(const std::vector<int> &ref, int begin, int end, int ele) {
         }
         int mid = (begin + end) / 2;
         if (ref[mid] < ele) {
+            if (begin == mid) {
+                break;
+            }
             begin = mid;
         }
         else if (ref[mid] == ele) {
@@ -31,7 +42,7 @@ int half_locate(const std::vector<int> &ref, int begin, int end, int ele) {
         ret = begin + 1;
     }
     else if (ref[begin] == ele) {
-        while (ref[begin] == ele && begin < ref.size()) {
+        while (ref[begin] == ele && begin < (int)ref.size()) {
             ++begin;
         }
         ret = begin;
@@ -62,30 +73,13 @@ void sort_fast_div(std::vector<int> &ref, int low, int high) {
     sort_fast_div(ref, low + 1, r);
 }
 
-/* 向叶节点方向维护 */
-void heap_fix(std::vector<int> heap, int node) {
-    while (node < heap.size() / 2) {
-        if (heap[node*2+1]>heap[node*2] && heap[node*2+1]>heap[node]) {
-            std::swap(heap[node*2+1],heap[node]);
-            node = node * 2 + 1;
-        }
-        else if (heap[node*2]>heap[node*2+1] && heap[node*2]>heap[node]) {
-            std::swap(heap[node*2],heap[node]);
-            node = node * 2;
-        }
-        else {
-            break;
-        }
-    }
-}
-
 }
 
 /* 直接插入排序 */
 void sort_insert(std::vector<int> &ref) {
-    for (int i = 1; i < ref.size(); ++i) {
+    for (int i = 1; i < (int)ref.size(); ++i) {
         for (int j = i; j - 1 >= 0; --j) {
-            if (ref[j-1] < ref[j]) {
+            if (ref[j-1] > ref[j]) {
                 std::swap(ref[j-1],ref[j]);
             }
             else {
@@ -97,8 +91,9 @@ void sort_insert(std::vector<int> &ref) {
 
 /* 折半插入排序 */
 void sort_insert_half(std::vector<int> &ref) {
-    for (int i = 1; i < ref.size(); ++i) {
+    for (int i = 1; i < (int)ref.size(); ++i) {
         int ret = half_locate(ref, 0, i, ref[i]);
+        assert (ret >= 0);
         for (int j = i; j - 1 >= ret; --j) {
             std::swap(ref[j-1],ref[j]);
         }
@@ -108,15 +103,15 @@ void sort_insert_half(std::vector<int> &ref) {
 /* 希尔排序 */
 void sort_shell(std::vector<int> &ref) {
     std::vector<int> arr = {5,3,1}; /* 这里直接取确定的一个增量序列 */
-    for (int m = 0; m < arr.size(); ++m) { /* m表示增量序列序号 */
+    for (int m = 0; m < (int)arr.size(); ++m) { /* m表示增量序列序号 */
         for (int k = 0; k < arr[m]; ++k) { /* k表示趟内增量 */
             /* 简单插入排序 */
-            for (int i = 1; i*arr[m]+k < ref.size(); ++i) {
-                int iindex = i*arr[m]+k;
-                for (int j = i; j*arr[m]+k >= 0; --j) {
+            for (int i = 1; i*arr[m]+k < (int)ref.size(); ++i) {
+                // int iindex = i*arr[m]+k;
+                for (int j = i; (j-1)*arr[m]+k >= 0; --j) {
                     int jindexpre = (j-1)*arr[m]+k;
                     int jindex = j*arr[m]+k;
-                    if (ref[jindexpre] < ref[jindex]) {
+                    if (ref[jindexpre] > ref[jindex]) {
                         std::swap(ref[jindexpre],ref[jindex]);
                     }
                     else {
@@ -164,13 +159,43 @@ void sort_select(std::vector<int> &ref) {
     }
 }
 
-/* 堆排序 */
+/** 
+ * 堆排序
+ *           0
+ *      1           2
+ *    3   4      5     6
+ **/
+
+#define HEAP_LEFT(i) (2*i + 1)
+#define HEAP_RIGHT(i) (2*i + 2)
+#define HEAP_PARENT(i) ((i-1)/2)
+
+void sort_heap_maintain(std::vector<int> &ref, int i) {
+    while (i < (int)ref.size()) {
+        if (ref[i] < ref[HEAP_LEFT(i)]) {
+            std::swap (ref[i], ref[HEAP_LEFT(i)]);
+            i = HEAP_LEFT(i);
+        }
+        else if (ref[i] < ref[HEAP_RIGHT(i)]) {
+            std::swap (ref[i], ref[HEAP_RIGHT(i)]);
+            i = HEAP_RIGHT(i);
+        }
+        else {
+            break;
+        }
+    }
+}
+
 void sort_heap(std::vector<int> &ref) {
     int size = ref.size();
     ref.insert(ref.begin(),0);
 
     /* 建堆 */
-    for (int node = size / 2;
+    for (int i = size / 2 - 1; i >= 0; --i) {
+        sort_heap_maintain(ref, i);
+    }
+
+    return ;
 }
 
 /* 归并排序 */
