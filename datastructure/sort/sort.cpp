@@ -54,26 +54,68 @@ int half_locate(const std::vector<int> &ref, int begin, int end, int ele) {
     return ret;
 }
 
+/** 
+ * 参考 <https://www.runoob.com/w3cnote/quick-sort.html> 
+ * 用挖坑填坑的方式来理解。
+ **/
 void sort_fast_div(std::vector<int> &ref, int low, int high) {
-    if (low < high) {
+    if (! (low < high)) {
         return;
     }
     int l = low;
     int r = high;
-    int midele = ref[low];
+    int midele = ref[low]; // 挖坑
     while (low < high) {
+        while (ref[high] >= midele && low < high) --high;
+        ref[low] = ref[high]; // 挖坑填坑，新坑为 high
         while (ref[low] < midele && low < high) ++low;
-        std::swap (ref[low],ref[high]);
-        while (ref[high] > midele && low < high) --high;
-        std::swap (ref[low],ref[high]);
+        ref[high] = ref[low]; // 挖坑填坑，新坑为 low
     }
-    ref[low]=midele;
+    ref[low] = midele; // 将会合处的坑恢复为最初挖出的元素
 
     sort_fast_div(ref, l, low - 1);
     sort_fast_div(ref, low + 1, r);
 }
 
+
+/** 
+ * 堆
+ * 0 1 2 3 4 5 6
+ * -->
+ *           0
+ *      1           2
+ *    3   4      5     6
+ **/
+
+#define HEAP_LEFT(i) (2*i + 1)
+#define HEAP_RIGHT(i) (2*i + 2)
+#define HEAP_PARENT(i) ((i-1)/2)
+#define HEAP_HAS_LEFT(i,size) (HEAP_LEFT(i) <= size)
+#define HEAP_HAS_RIGHT(i,size) (HEAP_RIGHT(i) <= size)
+
+void sort_heap_adjust(std::vector<int> &ref, int i) {
+    int size = (int)ref.size();
+    while (HEAP_HAS_LEFT(i, size)) {
+        int j = i;
+        if (HEAP_HAS_RIGHT(i, size)) {
+            if (ref[HEAP_RIGHT(i)] > ref[j]) {
+                j = HEAP_RIGHT(i);
+            }
+        }
+        if (HEAP_HAS_LEFT(i, size)) {
+            if (ref[HEAP_LEFT(i)] > ref[j]) {
+                j = HEAP_LEFT(i);
+            }
+        }
+        if (j == i) {
+            break;
+        }
+        std::swap (ref[j], ref[i]);
+        i = j;
+    }
 }
+
+} // end of anonymous namespace
 
 /* 直接插入排序 */
 void sort_insert(std::vector<int> &ref) {
@@ -130,7 +172,7 @@ void sort_bubble(std::vector<int> &ref) {
     for (int i = ref.size() - 1; i > 0; --i) {
         sort_flag = false;
         for (int j = 0; j < i; ++j) {
-            if (ref[j] < ref[j+1]) {
+            if (ref[j] > ref[j+1]) {
                 std::swap(ref[j], ref[j+1]);
                 sort_flag = true;
             }
@@ -159,40 +201,13 @@ void sort_select(std::vector<int> &ref) {
     }
 }
 
-/** 
- * 堆排序
- *           0
- *      1           2
- *    3   4      5     6
- **/
-
-#define HEAP_LEFT(i) (2*i + 1)
-#define HEAP_RIGHT(i) (2*i + 2)
-#define HEAP_PARENT(i) ((i-1)/2)
-
-void sort_heap_maintain(std::vector<int> &ref, int i) {
-    while (i < (int)ref.size()) {
-        if (ref[i] < ref[HEAP_LEFT(i)]) {
-            std::swap (ref[i], ref[HEAP_LEFT(i)]);
-            i = HEAP_LEFT(i);
-        }
-        else if (ref[i] < ref[HEAP_RIGHT(i)]) {
-            std::swap (ref[i], ref[HEAP_RIGHT(i)]);
-            i = HEAP_RIGHT(i);
-        }
-        else {
-            break;
-        }
-    }
-}
 
 void sort_heap(std::vector<int> &ref) {
     int size = ref.size();
-    ref.insert(ref.begin(),0);
 
     /* 建堆 */
     for (int i = size / 2 - 1; i >= 0; --i) {
-        sort_heap_maintain(ref, i);
+        sort_heap_adjust(ref, i);
     }
 
     return ;
