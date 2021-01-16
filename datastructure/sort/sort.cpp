@@ -90,11 +90,10 @@ void sort_fast_div(std::vector<int> &ref, int low, int high) {
 #define HEAP_LEFT(i) (2*i + 1)
 #define HEAP_RIGHT(i) (2*i + 2)
 #define HEAP_PARENT(i) ((i-1)/2)
-#define HEAP_HAS_LEFT(i,size) (HEAP_LEFT(i) <= size)
-#define HEAP_HAS_RIGHT(i,size) (HEAP_RIGHT(i) <= size)
+#define HEAP_HAS_LEFT(i,size) (HEAP_LEFT(i) < size)
+#define HEAP_HAS_RIGHT(i,size) (HEAP_RIGHT(i) < size)
 
-void sort_heap_adjust(std::vector<int> &ref, int i) {
-    int size = (int)ref.size();
+void sort_heap_adjust(std::vector<int> &ref, int size, int i) {
     while (HEAP_HAS_LEFT(i, size)) {
         int j = i;
         if (HEAP_HAS_RIGHT(i, size)) {
@@ -113,6 +112,19 @@ void sort_heap_adjust(std::vector<int> &ref, int i) {
         std::swap (ref[j], ref[i]);
         i = j;
     }
+}
+
+void sort_merge_div(std::vector<int> &ref, int begin, int end) {
+    if (begin >= end) {
+        return;
+    }
+    
+    int mid = (begin + end) / 2;
+
+    sort_merge_div(ref, begin, mid);
+    sort_merge_div(ref, mid, end);
+
+    std::vector<int> vbuf (end - begin);
 }
 
 } // end of anonymous namespace
@@ -205,16 +217,21 @@ void sort_select(std::vector<int> &ref) {
 void sort_heap(std::vector<int> &ref) {
     int size = ref.size();
 
-    /* 建堆 */
-    for (int i = size / 2 - 1; i >= 0; --i) {
-        sort_heap_adjust(ref, i);
+    for (int k = size; k > 1; --k) {
+        /* 建堆 */
+        for (int i = k / 2 - 1; i >= 0; --i) {
+            sort_heap_adjust(ref, k, i);
+        }
+        /* 取出根节点 */
+        std::swap (ref[0], ref[k-1]);
     }
-
     return ;
 }
 
 /* 归并排序 */
-void sort_merge(std::vector<int> &ref);
+void sort_merge(std::vector<int> &ref) {
+
+}
 
 /* 基数排序 */
 void sort_radix(std::vector<int> &ref);
